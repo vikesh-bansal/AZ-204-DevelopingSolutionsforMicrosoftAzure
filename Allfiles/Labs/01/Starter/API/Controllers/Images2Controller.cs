@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Api.Controllers
 {
-    [Route("/Images")]
+    [Route("/Images2")]
     [ApiController]
     public class Images2Controller : ControllerBase
     {

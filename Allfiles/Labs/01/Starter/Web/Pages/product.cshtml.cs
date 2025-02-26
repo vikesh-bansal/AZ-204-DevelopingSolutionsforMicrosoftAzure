@@ -39,7 +39,7 @@ namespace Web.Pages
             this.ImageList = imagesList.ToList<string>();
 
 
-            var thumbImageUrl = _options.ApiUrl+ "/thumbnail";
+            var thumbImageUrl = _options.ApiUrl+ "/Images2/thumbnail";
             string thumbsJson = await _httpClient.GetStringAsync(thumbImageUrl);
             ThumbnailList = JsonConvert.DeserializeObject<IEnumerable<string>>(thumbsJson).ToList(); 
             this.ImageList = imagesList.ToList<string>();
@@ -67,7 +67,7 @@ namespace Web.Pages
                     }
 
                     // Generate Thumbnail
-                    var thumbImageUrl = _options.ApiUrl;
+                    var thumbImageUrl = _options.ApiUrl+ "/Images2/thumbnail";
                     using (var sourceImage = new Bitmap(memoryStream))
                     using (var objBitMap = new Bitmap(200, 200))
                     using (var objGraphics = Graphics.FromImage(objBitMap))
