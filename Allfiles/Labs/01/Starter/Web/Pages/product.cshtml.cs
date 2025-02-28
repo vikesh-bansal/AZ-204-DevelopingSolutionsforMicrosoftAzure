@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Drawing;
+using SkiaSharp;
+using System.Collections.Generic; 
 using System.IO;
 using System.Linq;
 using System.Net.Http;
@@ -68,35 +68,16 @@ namespace Web.Pages
 
                     // Generate Thumbnail
                     var thumbImageUrl = _options.ApiUrl+ "/Images2/thumbnail";
-                    using (var sourceImage = new Bitmap(memoryStream))
-                    using (var objBitMap = new Bitmap(200, 200))
-                    using (var objGraphics = Graphics.FromImage(objBitMap))
+
+                    using (var inputImage = SKBitmap.Decode(memoryStream))
                     {
-                        objGraphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                        objGraphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
-
-                        // Maintain Aspect Ratio
-                        int newWidth, newHeight;
-                        float aspectRatio = (float)sourceImage.Width / sourceImage.Height;
-                        if (aspectRatio > 1)
-                        {
-                            newWidth = 200;
-                            newHeight = (int)(200 / aspectRatio);
-                        }
-                        else
-                        {
-                            newHeight = 200;
-                            newWidth = (int)(200 * aspectRatio);
-                        }
-
-                        objGraphics.DrawImage(sourceImage, (200 - newWidth) / 2, (200 - newHeight) / 2, newWidth, newHeight);
-
-                        // Convert Thumbnail to Stream and Upload
+                        var resized = inputImage.Resize(new SKImageInfo(200, 200), SKSamplingOptions.Default); 
                         using (var thumbStream = new MemoryStream())
                         {
-                            objBitMap.Save(thumbStream, System.Drawing.Imaging.ImageFormat.Png);
+                            resized.Encode(thumbStream, SKEncodedImageFormat.Png, 100);
                             thumbStream.Position = 0;
 
+                            // Code to push using API will be added here
                             using (var thumbContent = new StreamContent(thumbStream))
                             {
                                 thumbContent.Headers.ContentType = new MediaTypeHeaderValue("image/png");
@@ -104,6 +85,7 @@ namespace Web.Pages
                             }
                         }
                     }
+                    
                 }
             }
 
