@@ -60,7 +60,7 @@ namespace Api.Controllers
         [HttpGet("thumbnail")]
         public async Task<ActionResult<IEnumerable<string>>> GetThumbnails()
         {
-            BlobContainerClient blobContainerClient = await GetCloudBlobContainer(_options.FullImageContainerName);
+            BlobContainerClient blobContainerClient = await GetCloudBlobContainer(_options.ThumbnailImageContainerName);
 
             BlobClient blobClient;
             BlobSasBuilder blobSasBuilder;
@@ -71,7 +71,7 @@ namespace Api.Controllers
                 blobClient = blobContainerClient.GetBlobClient(blobItem.Name);
                 blobSasBuilder = new BlobSasBuilder()
                 {
-                    BlobContainerName = _options.FullImageContainerName,
+                    BlobContainerName = _options.ThumbnailImageContainerName,
                     BlobName = blobItem.Name,
                     ExpiresOn = DateTime.UtcNow.AddMinutes(5),
                     Protocol = SasProtocol.Https
