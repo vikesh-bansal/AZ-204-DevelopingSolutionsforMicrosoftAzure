@@ -25,6 +25,15 @@ public class Program
 
         string existingContainerName = "raster-graphics";
         await EnumerateBlobsAsync(blobServiceClient, existingContainerName);
+    
+        string newContainerName = "vector-graphics";
+
+        BlobContainerClient blobContainerClient = await GetContainerAsync(blobServiceClient, newContainerName);
+    
+        string uploadedBlobName = "graph.svg";
+        BlobClient blobClient = await GetBlobAsync(blobContainerClient,uploadedBlobName);
+
+        Console.Out.WriteLineAsync($"Blob Uri: \t{blobClient.Uri}");
     }
 
 
@@ -49,16 +58,33 @@ public class Program
         {
             await Console.Out.WriteLineAsync($"Existing Blob: \t{blobItem.Name}");
         }
-
-
-
-
-
     }
 
     private static async Task<BlobContainerClient> GetContainerAsync(BlobServiceClient blobServiceClient, string containerName)
     {
+        BlobContainerClient blobContainerClient=blobServiceClient.GetBlobContainerClient(containerName);
+        await blobContainerClient.CreateIfNotExistsAsync(PublicAccessType.Blob);
+        await Console.Out.WriteLineAsync($"New Container: \t{blobContainerClient.Name}");
 
+        return blobContainerClient;
+    }
+
+    private static async Task<BlobClient> GetBlobAsync(BlobContainerClient blobContainerClient, string blobName)
+    {
+        BlobClient blobClient = blobContainerClient.GetBlobClient(blobName);
+        bool exists = await blobClient.ExistsAsync();
+
+        if (!exists)
+        {
+            await Console.Out.WriteLineAsync($"Blob {blobName} does not exists");
+
+        }
+        else
+        {
+            await Console.Out.WriteLineAsync($"Blob {blobName} exists");
+        }
+
+        return blobClient;
     }
 
 }
